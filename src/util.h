@@ -32,6 +32,20 @@
 
 #endif
 
+// Some platforms handle PROGMEM differently.
+// This macro resolves "pointer-to-object" errors in those platforms.
+// src: https://github.com/SlashDevin/NeoGPS/issues/112
+#if defined(ESP8266) |              \
+    defined(ARDUINO_SAMD_MKRZERO) | \
+    defined(ARDUINO_SAMD_ZERO) |    \
+    defined(ARDUINO_SAM_DUE) |      \
+    defined(ARDUINO_ARCH_ARC32) |   \
+    defined(__TC27XX__) |           \
+    (defined(TEENSYDUINO) && (TEENSYDUINO < 139))
+#undef pgm_read_ptr
+#define pgm_read_ptr(addr) (*(const void **)(addr))
+#endif
+
 namespace BIP39 {
 
 word_list split(const std::string& s, char delimiter);
